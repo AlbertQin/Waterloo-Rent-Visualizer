@@ -1,0 +1,26 @@
+{
+  "name": "waterloo-rent-visualizer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "scrape.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlbertQin/Waterloo-Rent-Visualizer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlbertQin/Waterloo-Rent-Visualizer/issues"
+  },
+  "homepage": "https://github.com/AlbertQin/Waterloo-Rent-Visualizer#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "cli-table": "^0.3.1",
+    "jsdom": "^13.1.0",
+    "request-promise": "^4.2.2",
+    "xmlhttprequest": "^1.8.0"
+  }
+}
