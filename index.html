@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Geocoding Service</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <title>Places Search Box</title>
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -16,161 +16,109 @@
         margin: 0;
         padding: 0;
       }
-      #description {
-        font-family: Roboto;
-        font-size: 15px;
-        font-weight: 300;
-      }
-
-      #infowindow-content .title {
-        font-weight: bold;
-      }
-
-      #infowindow-content {
-        display: none;
-      }
-
-      #map #infowindow-content {
-        display: inline;
-      }
-
-      .pac-card {
-        margin: 10px 10px 0 0;
-        border-radius: 2px 0 0 2px;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        outline: none;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
         background-color: #fff;
-        font-family: Roboto;
-      }
-
-      #pac-container {
-        padding-bottom: 12px;
-        margin-right: 12px;
-      }
-
-      .pac-controls {
-        display: inline-block;
-        padding: 5px 11px;
-      }
-
-      .pac-controls label {
-        font-family: Roboto;
-        font-size: 13px;
-        font-weight: 300;
-      }
-
-      #pac-input {
-        background-color: #fff;
-        font-family: Roboto;
-        font-size: 15px;
-        font-weight: 300;
-        margin-left: 12px;
-        padding: 0 11px 0 13px;
-        text-overflow: ellipsis;
-        width: 400px;
-      }
-
-      #pac-input:focus {
-        border-color: #4d90fe;
-      }
-
-      #title {
-        color: #fff;
-        background-color: #4d90fe;
-        font-size: 25px;
-        font-weight: 500;
-        padding: 6px 12px;
-      }
-      #target {
-        width: 345px;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
       }
     </style>
   </head>
   <body>
-    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+    <div id="floating-panel">
+      <input id="address" type="textbox" value="Sydney, NSW">
+      <input id="submit" type="button" value="Geocode">
+    </div>
     <div id="map"></div>
     <script>
-      // This example adds a search box to a map, using the Google Place Autocomplete
-      // feature. People can enter geographical searches. The search box will return a
-      // pick list containing a mix of places and predicted search terms.
-
-      // This example requires the Places library. Include the libraries=places
-      // parameter when you first load the API. For example:
-      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
-
-      function initAutocomplete() {
+      function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: -33.8688, lng: 151.2195},
-          zoom: 13,
-          mapTypeId: 'roadmap'
+          zoom: 8,
+          center: {lat: -34.397, lng: 150.644}
         });
+        var geocoder = new google.maps.Geocoder();
 
-        // Create the search box and link it to the UI element.
-        var input = document.getElementById('pac-input');
-        //var input = "52 Rosenfeld Crescent, Kanata, ON, Canada";
-        var searchBox = new google.maps.places.SearchBox(input);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-        // Bias the SearchBox results towards current map's viewport.
-        map.addListener('bounds_changed', function() {
-          searchBox.setBounds(map.getBounds());
-        });
-
-        var markers = [];
-        // Listen for the event fired when the user selects a prediction and retrieve
-        // more details for that place.
-        searchBox.addListener('places_changed', function() {
-          console.log(searchBox);
-          var places = searchBox.getPlaces();
-
-          if (places.length == 0) {
-            return;
-          }
-
-          // Clear out the old markers.
-          markers.forEach(function(marker) {
-            marker.setMap(null);
-          });
-          markers = [];
-
-          // For each place, get the icon, name and location.
-          var bounds = new google.maps.LatLngBounds();
-          places.forEach(function(place) {
-            if (!place.geometry) {
-              console.log("Returned place contains no geometry");
-              return;
-            }
-            var icon = {
-              url: place.icon,
-              size: new google.maps.Size(71, 71),
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(17, 34),
-              scaledSize: new google.maps.Size(25, 25)
-            };
-
-            // Create a marker for each place.
-            markers.push(new google.maps.Marker({
-              map: map,
-              icon: icon,
-              title: place.name,
-              position: place.geometry.location
-            }));
-
-            if (place.geometry.viewport) {
-              // Only geocodes have viewport.
-              bounds.union(place.geometry.viewport);
-            } else {
-              bounds.extend(place.geometry.location);
-            }
-          });
-          map.fitBounds(bounds);
+        document.getElementById('submit').addEventListener('click', function() {
+          geocodeAddress(geocoder, map);
         });
       }
 
+      function geocodeAddress(geocoder, resultsMap) {
+        var address = [ '            102 Anndale Dr, Toronto, ON',
+    '            55 Cardill Crescent, Waterloo, ON',
+    '            169 Candlewood Crescent, Waterloo, ON',
+    '            449 Hazel Street, Waterloo, ON',
+    '            273 Lester Street, Waterloo, ON',
+    '            112 Columbia Street West, Waterloo, ON',
+    '            59 King St. N., Waterloo, ON',
+    '            136 Mooregate Cres, Kitchener, ON',
+    '            85 Water St South, Cambridge, ON',
+    '            169 Candlewood Crescent,  Waterloo, ON',
+    '            35 Brant Rd N., Cambridge, ON',
+    '            Wellesley St & Church St, Toronto, ON',
+    '            25 Concession St #102, Cambridge, ON',
+    '            22 STONEHENGE CRES, Toronto, Canada Area, ON',
+    '            300 Regina St N, Waterloo, ON',
+    '            86 Heatherwood Place, Kitchener, ON',
+    '            25 Water St. S., Cambridge, ON',
+    '            21 St. Joseph St., Toronto, ON',
+    '            40 Karen Rd., Toronto, ON',
+    '            270 Spadina Road E, Kitchener, ON',
+    '            31 Rusholme DRIVE (not Road), Toronto, ON',
+    '            931 Glasgow Street , Kitchener, ON',
+    '            401-340 Lonsdale Rd., Toronto, ON',
+    '            280 Lester Street, Waterloo, ON',
+    '            68 Roseview Ave, Cambridge, ON',
+    '            4 Mulberry Mews, (Markham)Thornhill, ON',
+    '            98b Lappin Avenue, Toronto, ON',
+    '            3504 Hurontario St. , Mississauga, ON',
+    '            6050 Bidwell trail, Mississauga, ON',
+    '            3400 PAUL ANKA  DRIVE, OTTAWA, ON',
+    '            2876 Rainbow Cres., Mississauga, ON',
+    '            121 University Ave E #58, Waterloo, ON',
+    '            111 Mason Terrace, Ottawa, ON',
+    '            92 St. Vincent St. North, Stratford, ON',
+    '            65 Wellington Street South, Cambridge, ON',
+    '            98 Albert Street, Waterloo, ON',
+    '            54 Grand Avenue N, Cambridge, ON',
+    '            443 Hazel Street, Waterloo, ON',
+    '            74 William Street West, Waterloo, ON',
+    '            74 William Street West, Waterloo, ON',
+    '            62 Ebycrest Road, Breslau, ON',
+    '            340 Union Blvd, Kitchener, ON',
+    '            330 Phillip Str, Waterloo, ON',
+    '            397 Keats Way, Unit 1, Waterloo, ON',
+    '            56-250 Ainslie St. S, Cambridge, ON',
+    '            79 Wellington S, Cambridge, ON',
+    '            1788 Lobsinger Line, Waterloo, ON',
+    '            405 Winchester Dr, Waterloo, ON',
+    '            402 Midwood Crescent, Waterloo, ON',
+    '            28 Mulberry Lane, Waterloo, ON' ];
+
+        for(i = 0; i < 20; i++) {
+          geocoder.geocode({'address': address[i]}, function(results, status) {
+            if (status === 'OK') {
+              resultsMap.setCenter(results[0].geometry.location);
+              var marker = new google.maps.Marker({
+                map: resultsMap,
+                position: results[0].geometry.location
+              });
+
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+      }
+    }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBOKooRVVUehABwDRJgPq8C9eJ6PIWsmI&libraries=places&callback=initAutocomplete"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBOKooRVVUehABwDRJgPq8C9eJ6PIWsmI&callback=initMap""
          async defer></script>
   </body>
 </html>
