@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Geocoding Service</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <title>Waterloo Rentals</title>
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -16,37 +16,127 @@
         margin: 0;
         padding: 0;
       }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+      /* The bubble is anchored above the tip. */
+     .popup-bubble-anchor {
+       position: absolute;
+       width: 100%;
+       bottom: /* TIP_HEIGHT= */ 8px;
+       left: 0;
+     }
+     /* Draw the tip. */
+     .popup-bubble-anchor::after {
+       content: "";
+       position: absolute;
+       top: 0;
+       left: 0;
+       /* Center the tip horizontally. */
+       transform: translate(-50%, 0);
+       /* The tip is a https://css-tricks.com/snippets/css/css-triangle/ */
+       width: 0;
+       height: 0;
+       /* The tip is 8px high, and 12px wide. */
+       border-left: 6px solid transparent;
+       border-right: 6px solid transparent;
+       border-top: /* TIP_HEIGHT= */ 8px solid white;
+     }
+     /* The popup bubble itself. */
+     .popup-bubble-content {
+       position: absolute;
+       top: 0;
+       left: 0;
+       transform: translate(-50%, -100%);
+       /* Style the info window. */
+       background-color: white;
+       padding: 5px;
+       border-radius: 5px;
+       font-family: sans-serif;
+       overflow-y: auto;
+       max-height: 60px;
+       box-shadow: 0px 2px 10px 1px rgba(0,0,0,0.5);
+     }
+     /* The location pointed to by the popup tip. */
+.popup-tip-anchor {
+  height: 0;
+  position: absolute;
+  /* The max width of the info window. */
+  width: 200px;
+}
+
     </style>
   </head>
   <body>
     <div id="map"></div>
     <script>
 
-      var xhttp = new XMLHttpRequest();
+    var map, popup, Popup;
 
-
-      xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-             // Typical action to be performed when the document is ready:
-          }
-      };
       function initMap() {
-        var myLatLng = {lat: -25.363, lng: 131.044};
-
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 10,
-          center: myLatLng
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 14,
+          center: {lat: 43.470933, lng: -80.544461}
         });
+        var geocoder = new google.maps.Geocoder();
+          geocodeAddress(geocoder, map);
 
-        var marker = new google.maps.Marker({
-          position: myLatLng,
-          map: map,
-          title: 'Hello World!'
-        });
       }
+
+      function geocodeAddress(geocoder, resultsMap) {
+
+        var address = "<%= addresses %>";
+        address = address.split(",");
+        var links = "<%= links %>";
+        links = links.split(",");
+
+    for (let i = 1; i < 50; i++) {
+
+        setTimeout( function(){
+
+          geocoder.geocode({'address': address[i]}, function(results, status) {
+            if (status === 'OK') {
+              //resultsMap.setCenter(results[0].geometry.location);
+              var marker = new google.maps.Marker({
+                map: resultsMap,
+                animation: google.maps.Animation.DROP,
+                position: results[0].geometry.location,
+                title: links[i]
+              });
+
+var infoDiv = '<div id="content">' +
+       +"listings.och.uwaterloo.ca"+ links[i] +
+    '</div>'
+
+    var infowindow = new google.maps.InfoWindow({
+          content: infoDiv
+        });
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+
+
+          } else {
+            //alert('Geocode was not successful for the following reason: ' + status);
+          }
+          });
+
+        }, i*500 );
+    }
+    }
+
     </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=########################&callback=initMap&libraries=places">
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBOKooRVVUehABwDRJgPq8C9eJ6PIWsmI&callback=initMap""
+         async defer></script>
   </body>
 </html>
