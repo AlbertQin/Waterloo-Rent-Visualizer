@@ -32,22 +32,16 @@
     </style>
   </head>
   <body>
-    <div id="floating-panel">
-      <input id="address" type="textbox" value="Sydney, NSW">
-      <input id="submit" type="button" value="Geocode">
-    </div>
     <div id="map"></div>
     <script>
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 8,
-          center: {lat: -34.397, lng: 150.644}
+          zoom: 14,
+          center: {lat: 43.470933, lng: -80.544461}
         });
         var geocoder = new google.maps.Geocoder();
-
-        document.getElementById('submit').addEventListener('click', function() {
           geocodeAddress(geocoder, map);
-        });
+
       }
 
       function geocodeAddress(geocoder, resultsMap) {
@@ -102,10 +96,12 @@
     '            402 Midwood Crescent, Waterloo, ON',
     '            28 Mulberry Lane, Waterloo, ON' ];
 
-        for(i = 0; i < 20; i++) {
+    for (let i=1; i<50; i++) {
+        setTimeout( function(){
+
           geocoder.geocode({'address': address[i]}, function(results, status) {
             if (status === 'OK') {
-              resultsMap.setCenter(results[0].geometry.location);
+              //resultsMap.setCenter(results[0].geometry.location);
               var marker = new google.maps.Marker({
                 map: resultsMap,
                 position: results[0].geometry.location
@@ -114,8 +110,10 @@
           } else {
             alert('Geocode was not successful for the following reason: ' + status);
           }
-        });
-      }
+          });
+
+        }, i*500 );
+    }
     }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBOKooRVVUehABwDRJgPq8C9eJ6PIWsmI&callback=initMap""
