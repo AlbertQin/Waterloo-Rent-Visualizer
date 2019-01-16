@@ -7,31 +7,39 @@ function checkspace(str){
 
 var fulllink = [];
 var fulladdresses = [];
+var links;
+var addresses;
 
-function main(){
-  var url = 'https://listings.och.uwaterloo.ca/Listings/Search/Results?page='+ 1 + '&ps=50';
+function getInfo(){
+  return new Promise(function(resolve, reject){
+    var url = 'https://listings.och.uwaterloo.ca/Listings/Search/Results?page='+ 1 + '&ps=50';
 
-  rp(url)
-  .then(function(html){
-      //success!
+    rp(url)
+    .then(function(html){
+        //success!
 
-      var links = [];
-      for(var i = 0; i < 50; i++){
-       links.push($('a[style="float:left;"]', html)[i].attribs.href);
-      }
+        links = [];
+        for(var i = 0; i < 50; i++){
+         links.push($('a[style="float:left;"]', html)[i].attribs.href);
+        }
 
-      var addresses = [];
-      addresses = $('a[style="float:left;"]', html).text().split("\n");
-      addresses = addresses.filter(checkspace);
+        addresses = [];
+        addresses = $('a[style="float:left;"]', html).text().split("\n");
+        addresses = addresses.filter(checkspace);
 
-  console.log(addresses);
-  console.log(links);
+    console.log(addresses);
+    console.log(links);
 
-  return [fulllink, fulladdresses];
-    })
+  })
     .catch(function(err){
-      console.log(err);
-    });
-
+        console.log(err);
+      })
+    .then(function() {
+        resolve([addresses, links]);
+      });
+  });
 }
-console.log(main());
+
+getInfo().then(function(res) {
+  console.log(res);
+})
