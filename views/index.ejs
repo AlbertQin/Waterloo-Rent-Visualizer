@@ -115,7 +115,7 @@
               });
 
 var infoDiv = '<div id="content">' +
-       +"listings.och.uwaterloo.ca"+ links[i] +
+ links[i] +
     '</div>'
 
     var infowindow = new google.maps.InfoWindow({
@@ -127,7 +127,7 @@ var infoDiv = '<div id="content">' +
 
 
           } else {
-            //alert('Geocode was not successful for the following reason: ' + status);
+            alert('Geocode was not successful for the following reason: ' + status);
           }
           });
 
