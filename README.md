@@ -1,4 +1,5 @@
 # Waterloo-Rent-Visualizer
+https://github.com/AlbertQin/Waterloo-Rent-Visualizer/edit/master/screenshot.png)
 A map webapp that displays the location of Waterloo Rental Listings
 
 Scrapes the Waterloo Off campus rental listing for addresses using Node.JS with the Cheerio and promise-request package.
